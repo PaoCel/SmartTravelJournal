@@ -2,10 +2,9 @@ import Foundation
 import CoreLocation
 
 final class LocationService {
-    /// ⚠️ Sostituire con la propria chiave OpenWeatherMap (openweathermap.org/api).
-    /// Finché resta il placeholder l'API risponde 401 e la UI mostra lo stato d'errore
-    /// con il pulsante Retry — che è comunque uno dei punti di verifica del lab.
-    private let apiKey = "YOUR_API_KEY_HERE"
+    /// La chiave sta in Secrets.swift, che è in .gitignore.
+    /// Template: Planning/Secrets.swift.example
+    private let apiKey = Secrets.openWeatherMapAPIKey
 
     private let baseURL = "https://api.openweathermap.org/data/2.5/weather"
 
@@ -15,7 +14,8 @@ final class LocationService {
             URLQueryItem(name: "lat", value: "\(coordinate.latitude)"),
             URLQueryItem(name: "lon", value: "\(coordinate.longitude)"),
             URLQueryItem(name: "appid", value: apiKey),
-            URLQueryItem(name: "units", value: "metric")
+            URLQueryItem(name: "units", value: "metric"),
+            URLQueryItem(name: "lang", value: Locale.current.language.languageCode?.identifier ?? "en")
         ]
 
         guard let url = components?.url else {

@@ -184,9 +184,12 @@ struct JournalEntryEditor: View {
 
         do {
             let weather = try await locationService.fetchWeather(for: coordinate)
-            let temp = weather.main.temp.formatted(.number.precision(.fractionLength(0)))
+            // L'API risponde in Celsius; Measurement lo converte nell'unità
+            // preferita dal locale (°F negli USA) senza toccare la richiesta.
+            let temperature = Measurement(value: weather.main.temp, unit: UnitTemperature.celsius)
+            let temp = temperature.formatted(.measurement(width: .abbreviated, usage: .weather))
             let condition = weather.weather.first?.description ?? ""
-            weatherText = "\(weather.name) · \(temp)°C · \(condition)"
+            weatherText = "\(weather.name) · \(temp) · \(condition)"
         } catch let error as APIError {
             weatherError = error.errorDescription
         } catch {

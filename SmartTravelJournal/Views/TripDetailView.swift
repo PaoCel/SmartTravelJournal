@@ -58,10 +58,14 @@ struct TripDetailView: View {
             }
         }
         .navigationTitle(trip.title)
-        .navigationSubtitle("\(dateRange) · \(trip.entries.count) entries")
+        .navigationSubtitle("\(dateRange) · \(entriesLabel)")
         .sheet(isPresented: $showAddEntry) {
             JournalEntryEditor(trip: trip)
         }
+    }
+
+    private var entriesLabel: String {
+        String(localized: "\(trip.entries.count) entries")
     }
 
     private var dateRange: String {
