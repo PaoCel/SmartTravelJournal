@@ -8,7 +8,7 @@ struct ContentView: View {
                     Label("Trips", systemImage: "suitcase.fill")
                 }
 
-            MapPlaceholderView()
+            MapTabView()
                 .tabItem {
                     Label("Map", systemImage: "map.fill")
                 }
