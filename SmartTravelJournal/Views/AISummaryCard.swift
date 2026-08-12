@@ -35,6 +35,7 @@ struct AISummaryCard: View {
         HStack {
             Image(systemName: "sparkles")
                 .foregroundStyle(.white)
+                .accessibilityHidden(true)
 
             Text("AI TRIP SUMMARY")
                 .font(.caption)
@@ -44,6 +45,7 @@ struct AISummaryCard: View {
             Spacer()
         }
         .padding(10)
+        .accessibilityAddTraits(.isHeader)
         .background(
             LinearGradient(
                 colors: [.blue, .blue.opacity(0.6)],

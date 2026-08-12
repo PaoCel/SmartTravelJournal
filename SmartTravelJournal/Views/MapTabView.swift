@@ -53,6 +53,8 @@ struct MapTabView: View {
                                 .background(.thinMaterial)
                                 .clipShape(Circle())
                         }
+                        .accessibilityLabel("Center on my location")
+                        .accessibilityHint("Moves the map to your current position")
                         .padding(.trailing)
                         .padding(.bottom, 90)
                     }

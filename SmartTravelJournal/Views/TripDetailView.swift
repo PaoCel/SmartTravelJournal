@@ -9,6 +9,8 @@ struct TripDetailView: View {
     let namespace: Namespace.ID
 
     @State private var showAddEntry = false
+    @State private var showEditTrip = false
+    @State private var entryToEdit: JournalEntry? = nil
     @State private var appeared = false
     @State private var summaryViewModel = TripSummaryViewModel()
 
@@ -26,6 +28,7 @@ struct TripDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .matchedGeometryEffect(id: trip.id, in: namespace)
                     .listRowInsets(EdgeInsets())
+                    .accessibilityLabel("Cover photo for \(trip.title)")
             }
 
             Section("Trip Info") {
@@ -46,6 +49,9 @@ struct TripDetailView: View {
                 } else {
                     ForEach(Array(sortedEntries.enumerated()), id: \.element.id) { index, entry in
                         EntryRowView(entry: entry)
+                            .contentShape(Rectangle())
+                            .onTapGesture { entryToEdit = entry }
+                            .accessibilityHint("Double tap to edit this entry")
                             .opacity(appeared ? 1 : 0)
                             .offset(y: appeared ? 0 : 20)
                             .animation(
@@ -80,6 +86,12 @@ struct TripDetailView: View {
         }
         .navigationTitle(trip.title)
         .navigationSubtitle("\(dateRange) · \(entriesLabel)")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Edit") { showEditTrip = true }
+                    .accessibilityHint("Edit this trip's title and dates")
+            }
+        }
         .onAppear {
             appeared = false
             Task {
@@ -94,6 +106,12 @@ struct TripDetailView: View {
         }
         .sheet(isPresented: $showAddEntry) {
             JournalEntryEditor(trip: trip)
+        }
+        .sheet(isPresented: $showEditTrip) {
+            AddTripView(tripToEdit: trip)
+        }
+        .sheet(item: $entryToEdit) { entry in
+            JournalEntryEditor(trip: trip, entryToEdit: entry)
         }
     }
 

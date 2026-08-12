@@ -19,6 +19,8 @@ struct EntryRowView: View {
                 Text(entry.mood.emoji)
                     .font(.title3)
             }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Mood: \(entry.mood.label)")
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack {

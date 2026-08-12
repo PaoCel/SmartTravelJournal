@@ -11,6 +11,31 @@ final class JournalEntryViewModel {
     var longitude: Double = 0.0
     var timestamp: Date = .now
 
+    // Load / Update
+
+    func load(from entry: JournalEntry) {
+        title = entry.title
+        body = entry.body
+        mood = entry.mood
+        imageName = entry.imageName
+        latitude = entry.latitude
+        longitude = entry.longitude
+        timestamp = entry.timestamp
+    }
+
+    func updateEntry(_ entry: JournalEntry, context: ModelContext) {
+        entry.title = title
+        entry.body = body
+        entry.mood = mood
+        entry.imageName = imageName
+        entry.latitude = latitude
+        entry.longitude = longitude
+        entry.timestamp = timestamp
+        // I tag erano stati generati sul testo precedente: si invalidano.
+        entry.smartTagsCSV = nil
+        resetForm()
+    }
+
     // Save
 
     func saveEntry(to trip: Trip, context: ModelContext) {
@@ -38,7 +63,7 @@ final class JournalEntryViewModel {
         !title.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
-    private func resetForm() {
+    func resetForm() {
         title = ""
         body = ""
         mood = .calm

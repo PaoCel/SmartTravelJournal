@@ -9,6 +9,8 @@ struct JournalEntryEditor: View {
     @Environment(\.dismiss) private var dismiss
 
     let trip: Trip
+    /// Se valorizzata la sheet modifica la entry invece di crearne una nuova.
+    var entryToEdit: JournalEntry? = nil
 
     @State private var weatherText: String = ""
     @State private var isLoadingWeather: Bool = false
@@ -112,6 +114,9 @@ struct JournalEntryEditor: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel(mood.label)
+                            .accessibilityHint("Sets the mood for this entry")
+                            .accessibilityAddTraits(vm.mood == mood ? .isSelected : [])
                         }
                     }
                 }
@@ -140,6 +145,10 @@ struct JournalEntryEditor: View {
                             .onTapGesture {
                                 vm.imageName = name
                             }
+                            .accessibilityElement(children: .ignore)
+                            .accessibilityLabel(imageLabels[index])
+                            .accessibilityHint("Sets the photo for this entry")
+                            .accessibilityAddTraits(vm.imageName == name ? .isSelected : [])
                         }
                     }
                 }
@@ -148,9 +157,13 @@ struct JournalEntryEditor: View {
                     EmptyView()
                 }
             }
-            .navigationTitle("New Entry")
+            .navigationTitle(entryToEdit == nil ? "New Entry" : "Edit Entry")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
+                if let entry = entryToEdit {
+                    entryViewModel.load(from: entry)
+                    return
+                }
                 locationManager.requestPermission()
                 if let coordinate = locationManager.currentCoordinate {
                     entryViewModel.latitude = coordinate.latitude
@@ -172,7 +185,11 @@ struct JournalEntryEditor: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
-                        entryViewModel.saveEntry(to: trip, context: modelContext)
+                        if let entry = entryToEdit {
+                            entryViewModel.updateEntry(entry, context: modelContext)
+                        } else {
+                            entryViewModel.saveEntry(to: trip, context: modelContext)
+                        }
                         dismiss()
                     }
                     .disabled(!entryViewModel.isFormValid)

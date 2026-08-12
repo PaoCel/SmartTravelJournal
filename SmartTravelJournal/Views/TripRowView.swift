@@ -14,6 +14,7 @@ struct TripRowView: View {
                 .frame(width: imageSize, height: imageSize)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .matchedGeometryEffect(id: trip.id, in: namespace)
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(trip.title)
