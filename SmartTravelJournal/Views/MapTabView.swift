@@ -13,6 +13,12 @@ struct MapTabView: View {
     @State private var selectedMapStyle: MapStyleOption = .standard
     @State private var showsLocationDeniedAlert: Bool = false
 
+    /// Le entry salvate senza posizione hanno coordinate (0,0): un pin nel Golfo
+    /// di Guinea non è un dato, è rumore.
+    private var mappableEntries: [JournalEntry] {
+        entries.filter { $0.latitude != 0 || $0.longitude != 0 }
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -26,7 +32,7 @@ struct MapTabView: View {
 
                 ZStack(alignment: .bottom) {
                     Map(position: $cameraPosition) {
-                        ForEach(Array(entries.enumerated()), id: \.element.id) { index, entry in
+                        ForEach(Array(mappableEntries.enumerated()), id: \.element.id) { index, entry in
                             if index == 0 {
                                 Annotation(entry.title, coordinate: entry.coordinate) {
                                     EntryAnnotationView(entry: entry)
@@ -68,7 +74,7 @@ struct MapTabView: View {
                         .padding(.bottom, 90)
                     }
 
-                    MapSummaryCard(entryCount: entries.count)
+                    MapSummaryCard(entryCount: mappableEntries.count)
                 }
             }
             .navigationTitle("Map")

@@ -1,14 +1,17 @@
 import Foundation
 import CoreLocation
 
-final class LocationService {
-    /// La chiave sta in Secrets.swift, che è in .gitignore.
-    /// Template: Planning/Secrets.swift.example
-    private let apiKey = Secrets.openWeatherMapAPIKey
+final class LocationService: Sendable {
+    /// La chiave arriva dai Build Settings via Info.plist: vedi `AppSecrets`.
+    private let apiKey = AppSecrets.openWeatherMapAPIKey
 
     private let baseURL = "https://api.openweathermap.org/data/2.5/weather"
 
     func fetchWeather(for coordinate: CLLocationCoordinate2D) async throws -> WeatherResponse {
+        guard !AppSecrets.isOpenWeatherMapKeyMissing else {
+            throw APIError.missingAPIKey
+        }
+
         var components = URLComponents(string: baseURL)
         components?.queryItems = [
             URLQueryItem(name: "lat", value: "\(coordinate.latitude)"),
