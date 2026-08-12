@@ -9,7 +9,7 @@ enum APIError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .networkUnavailable:
-            return "No internet connection. Check your network and try again."
+            return "No internet connection. Please check your network."
         case .invalidResponse:
             return "Unexpected response from the server."
         case .decodingFailed:
