@@ -10,6 +10,7 @@ struct TripDetailView: View {
 
     @State private var showAddEntry = false
     @State private var appeared = false
+    @State private var summaryViewModel = TripSummaryViewModel()
 
     private var sortedEntries: [JournalEntry] {
         trip.entries.sorted { $0.timestamp < $1.timestamp }
@@ -34,9 +35,7 @@ struct TripDetailView: View {
             }
 
             Section {
-                Text("AI-generated trip summary will appear here.")
-                    .foregroundStyle(.secondary)
-                    .font(.caption)
+                AISummaryCard(viewModel: summaryViewModel, trip: trip)
             }
 
             Section("JOURNAL ENTRIES") {
@@ -89,6 +88,9 @@ struct TripDetailView: View {
                     appeared = true
                 }
             }
+        }
+        .task {
+            await summaryViewModel.generate(for: trip, context: modelContext)
         }
         .sheet(isPresented: $showAddEntry) {
             JournalEntryEditor(trip: trip)

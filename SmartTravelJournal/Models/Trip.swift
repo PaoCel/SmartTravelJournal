@@ -9,6 +9,7 @@ final class Trip {
     var endDate: Date
     var coverImageName: String
     var aiSummary: String?
+    var aiHighlightsCSV: String?
 
     @Relationship(deleteRule: .cascade, inverse: \JournalEntry.trip)
     var entries: [JournalEntry] = []
@@ -19,7 +20,8 @@ final class Trip {
         startDate: Date,
         endDate: Date,
         coverImageName: String = "trip_beach",
-        aiSummary: String? = nil
+        aiSummary: String? = nil,
+        aiHighlightsCSV: String? = nil
     ) {
         self.id = id
         self.title = title
@@ -27,5 +29,6 @@ final class Trip {
         self.endDate = endDate
         self.coverImageName = coverImageName
         self.aiSummary = aiSummary
+        self.aiHighlightsCSV = aiHighlightsCSV
     }
 }

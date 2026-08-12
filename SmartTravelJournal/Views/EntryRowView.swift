@@ -1,9 +1,13 @@
 import SwiftUI
+import SwiftData
 
 struct EntryRowView: View {
+    @Environment(\.modelContext) private var modelContext
+
     let entry: JournalEntry
 
     @ScaledMetric private var circleSize: CGFloat = 40
+    @State private var tagViewModel = SmartTagViewModel()
 
     var body: some View {
         HStack(spacing: 12) {
@@ -37,11 +41,23 @@ struct EntryRowView: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
 
-                Text("AI tags will appear here.")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                if tagViewModel.isGenerating {
+                    ProgressView()
+                        .controlSize(.mini)
+                } else if !tagViewModel.tags.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 6) {
+                            ForEach(tagViewModel.tags, id: \.self) { tag in
+                                TagChipView(tag: tag)
+                            }
+                        }
+                    }
+                }
             }
         }
         .padding(.vertical, 4)
+        .task {
+            await tagViewModel.generate(for: entry, context: modelContext)
+        }
     }
 }
