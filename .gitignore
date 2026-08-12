@@ -13,4 +13,6 @@ xcuserdata/
 .DS_Store
 
 # Chiavi API
-SmartTravelJournal/Secrets.swift
+# La chiave OpenWeatherMap sta in Build Settings
+# (INFOPLIST_KEY_OpenWeatherMapAPIKey), col segnaposto YOUR_API_KEY_HERE:
+# non va mai committata la chiave vera. Vedi README.md.

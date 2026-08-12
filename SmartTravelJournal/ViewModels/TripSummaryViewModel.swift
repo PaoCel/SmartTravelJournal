@@ -2,6 +2,7 @@ import Foundation
 import FoundationModels
 import SwiftData
 
+@MainActor
 @Observable
 final class TripSummaryViewModel {
     var summary: TripSummary? = nil

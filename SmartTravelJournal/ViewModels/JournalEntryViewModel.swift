@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 
+@MainActor
 @Observable
 final class JournalEntryViewModel {
     var title: String = ""
@@ -46,6 +47,9 @@ final class JournalEntryViewModel {
         entry.timestamp = timestamp
         // I tag erano stati generati sul testo precedente: si invalidano.
         entry.smartTagsCSV = nil
+        // Anche il riassunto del viaggio parlava del contenuto vecchio.
+        entry.trip?.aiSummary = nil
+        entry.trip?.aiHighlightsCSV = nil
         resetForm()
     }
 
@@ -63,10 +67,15 @@ final class JournalEntryViewModel {
         )
         trip.entries.append(entry)
         context.insert(entry)
+        // Il riassunto in cache non conosce questa entry: si rigenera.
+        trip.aiSummary = nil
+        trip.aiHighlightsCSV = nil
         resetForm()
     }
 
     func deleteEntry(_ entry: JournalEntry, context: ModelContext) {
+        entry.trip?.aiSummary = nil
+        entry.trip?.aiHighlightsCSV = nil
         context.delete(entry)
     }
 
