@@ -42,9 +42,17 @@ final class TripSummaryViewModel {
         isGenerating = true
         errorMessage = nil
 
+        // Il testo si estrae qui, prima della chiamata async: `Trip` è un `@Model`
+        // e non può essere catturato nella closure `@Sendable` di `withTimeout`.
+        let tripTitle = trip.title
+        let entriesText = trip.entries
+            .sorted { $0.timestamp < $1.timestamp }
+            .map { "\($0.title): \($0.body)" }
+            .joined(separator: "\n")
+
         do {
             let generated = try await withTimeout(seconds: 20) { [service] in
-                try await service.generateSummary(for: trip)
+                try await service.generateSummary(tripTitle: tripTitle, entriesText: entriesText)
             }
             summary = generated
             wasGeneratedByAI = true

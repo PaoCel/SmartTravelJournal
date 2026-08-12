@@ -15,10 +15,14 @@ struct TripDetailView: View {
     @State private var summaryViewModel = TripSummaryViewModel()
 
     private var sortedEntries: [JournalEntry] {
-        trip.entries.sorted { $0.timestamp < $1.timestamp }
+        entryViewModel.filteredEntries(
+            trip.entries.sorted { $0.timestamp < $1.timestamp }
+        )
     }
 
     var body: some View {
+        @Bindable var vm = entryViewModel
+
         List {
             Section {
                 Image(trip.coverImageName)
@@ -43,9 +47,13 @@ struct TripDetailView: View {
 
             Section("JOURNAL ENTRIES") {
                 if sortedEntries.isEmpty {
-                    Text("No entries yet. Tap + Add Entry to create one.")
-                        .foregroundStyle(.secondary)
-                        .font(.caption)
+                    Text(
+                        entryViewModel.searchText.isEmpty
+                            ? "No entries yet. Tap + Add Entry to create one."
+                            : "No entries match your search."
+                    )
+                    .foregroundStyle(.secondary)
+                    .font(.caption)
                 } else {
                     ForEach(Array(sortedEntries.enumerated()), id: \.element.id) { index, entry in
                         EntryRowView(entry: entry)
@@ -86,6 +94,7 @@ struct TripDetailView: View {
         }
         .navigationTitle(trip.title)
         .navigationSubtitle("\(dateRange) · \(entriesLabel)")
+        .searchable(text: $vm.searchText, prompt: "Search entries")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Edit") { showEditTrip = true }
@@ -93,6 +102,9 @@ struct TripDetailView: View {
             }
         }
         .onAppear {
+            // Il ViewModel è condiviso fra i viaggi: la ricerca non deve
+            // sopravvivere all'uscita da questo dettaglio.
+            entryViewModel.searchText = ""
             appeared = false
             Task {
                 try? await Task.sleep(for: .milliseconds(100))
@@ -101,7 +113,9 @@ struct TripDetailView: View {
                 }
             }
         }
-        .task {
+        // `id:` fa ripartire il task quando cambia il numero di entry: senza,
+        // dopo la prima entry la card resterebbe su "Add journal entries…".
+        .task(id: trip.entries.count) {
             await summaryViewModel.generate(for: trip, context: modelContext)
         }
         .sheet(isPresented: $showAddEntry) {

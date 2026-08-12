@@ -1,12 +1,14 @@
 import SwiftUI
 import SwiftData
 import CoreLocation
+import UIKit
 
 struct JournalEntryEditor: View {
     @Environment(JournalEntryViewModel.self) private var entryViewModel
     @Environment(LocationManager.self) private var locationManager
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
 
     let trip: Trip
     /// Se valorizzata la sheet modifica la entry invece di crearne una nuova.
@@ -55,6 +57,21 @@ struct JournalEntryEditor: View {
                             "Longitude",
                             value: coordinate.longitude.formatted(.number.precision(.fractionLength(4)))
                         )
+                    } else if locationManager.isPermissionDenied {
+                        // Un solo messaggio, con la via d'uscita. Il permesso non
+                        // si richiede una seconda volta: iOS non lo mostrerebbe.
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Location access is off. The entry will be saved without a place.")
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+
+                            if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                                Button("Open Settings") {
+                                    openURL(settingsURL)
+                                }
+                                .accessibilityHint("Opens the Settings app to allow location access")
+                            }
+                        }
                     } else {
                         Text("Detecting location…")
                             .foregroundStyle(.secondary)
@@ -84,6 +101,11 @@ struct JournalEntryEditor: View {
                     } else if !weatherText.isEmpty {
                         Text(weatherText)
                             .font(.subheadline)
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                    } else if locationManager.isPermissionDenied {
+                        Text("Weather is unavailable without location access.")
+                            .foregroundStyle(.secondary)
+                            .font(.caption)
                             .transition(.move(edge: .top).combined(with: .opacity))
                     } else {
                         Text("Weather will load once your location is available.")
@@ -164,6 +186,9 @@ struct JournalEntryEditor: View {
                     entryViewModel.load(from: entry)
                     return
                 }
+                // Il ViewModel è condiviso: senza reset una bozza annullata (o la
+                // entry aperta in modifica) resterebbe nella prossima nuova entry.
+                entryViewModel.resetForm()
                 locationManager.requestPermission()
                 if let coordinate = locationManager.currentCoordinate {
                     entryViewModel.latitude = coordinate.latitude
@@ -181,7 +206,10 @@ struct JournalEntryEditor: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") {
+                        entryViewModel.resetForm()
+                        dismiss()
+                    }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
