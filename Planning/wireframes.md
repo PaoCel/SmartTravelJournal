@@ -1,6 +1,6 @@
 # Smart Travel Journal — Wireframe
 
-Lab 1, Step 2. Low-fidelity: contano struttura e posizione, non i colori.
+Low-fidelity: contano struttura e posizione, non i colori.
 Per ogni schermata, i container SwiftUI previsti.
 
 ## 1. Trip List — tab 1
@@ -35,8 +35,8 @@ Per ogni schermata, i container SwiftUI previsti.
 │ │ 12–22 Apr · 8 entries   │ │
 │ └─────────────────────────┘ │
 │ ┌─────────────────────────┐ │
-│ │ AI Trip Summary         │ │  placeholder fino al Lab 7
-│ │ (generato dal Lab 7)    │ │
+│ │ AI Trip Summary         │ │  placeholder finché non c'è
+│ │ (Foundation Models)     │ │  almeno una entry
 │ └─────────────────────────┘ │
 │ 😀 Primo giorno            │
 │    "Arrivati con il..."     │  preview del testo
@@ -98,8 +98,7 @@ Entry ordinate per timestamp.
 
 ## Note di struttura
 
-- Tre tab: **Trips**, **Map**, **Charts**. Il tab Charts arriva al Lab 6, ma la
-  `TabView` va predisposta al Lab 4.
+- Tre tab: **Trips**, **Map**, **Charts**, dentro un'unica `TabView`.
 - Trip List → Trip Detail è una push dentro `NavigationStack`.
   L'Entry Editor è presentato modale, non in push.
 - Il colore del pin sulla mappa deriva dal mood della entry: è l'unico punto in cui
