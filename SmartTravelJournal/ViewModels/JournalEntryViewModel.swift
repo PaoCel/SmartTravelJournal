@@ -11,6 +11,19 @@ final class JournalEntryViewModel {
     var longitude: Double = 0.0
     var timestamp: Date = .now
 
+    /// Ricerca nelle entry di un viaggio, come `TripsViewModel.searchText` per i viaggi.
+    var searchText: String = ""
+
+    // Search
+
+    func filteredEntries(_ entries: [JournalEntry]) -> [JournalEntry] {
+        if searchText.isEmpty { return entries }
+        return entries.filter {
+            $0.title.localizedStandardContains(searchText)
+                || $0.body.localizedStandardContains(searchText)
+        }
+    }
+
     // Load / Update
 
     func load(from entry: JournalEntry) {

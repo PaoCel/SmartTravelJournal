@@ -1,14 +1,17 @@
 import SwiftUI
 import MapKit
 import SwiftData
+import UIKit
 
 struct MapTabView: View {
     @Environment(LocationManager.self) private var locationManager
+    @Environment(\.openURL) private var openURL
 
     @Query private var entries: [JournalEntry]
 
     @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var selectedMapStyle: MapStyleOption = .standard
+    @State private var showsLocationDeniedAlert: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -41,6 +44,12 @@ struct MapTabView: View {
                     .mapStyle(selectedMapStyle.style)
                     .overlay(alignment: .bottomTrailing) {
                         Button {
+                            // Col permesso negato iOS non ripropone il dialogo:
+                            // senza questo ramo il bottone non farebbe nulla.
+                            guard !locationManager.isPermissionDenied else {
+                                showsLocationDeniedAlert = true
+                                return
+                            }
                             locationManager.requestPermission()
                             locationManager.startUpdating()
                             withAnimation {
@@ -63,6 +72,14 @@ struct MapTabView: View {
                 }
             }
             .navigationTitle("Map")
+            .alert("Location access is off", isPresented: $showsLocationDeniedAlert) {
+                if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                    Button("Open Settings") { openURL(settingsURL) }
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("Allow location access in Settings to center the map on your position.")
+            }
         }
     }
 }

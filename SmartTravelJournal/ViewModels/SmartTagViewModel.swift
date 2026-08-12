@@ -25,9 +25,14 @@ final class SmartTagViewModel {
         isGenerating = true
         errorMessage = nil
 
+        // Come in `TripSummaryViewModel`: i campi si leggono prima, `JournalEntry`
+        // è un `@Model` e non attraversa il confine di concorrenza.
+        let entryTitle = entry.title
+        let entryBody = entry.body
+
         do {
             let generated = try await withTimeout(seconds: 20) { [service] in
-                try await service.generateTags(for: entry)
+                try await service.generateTags(entryTitle: entryTitle, entryBody: entryBody)
             }
             tags = generated.tags
             entry.smartTagsCSV = generated.tags.joined(separator: ", ")

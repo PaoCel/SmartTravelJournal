@@ -9,6 +9,12 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
     var currentCoordinate: CLLocationCoordinate2D?
     var authorizationStatus: CLAuthorizationStatus = .notDetermined
 
+    /// L'utente ha rifiutato: la posizione non arriverà mai, la UI deve dirlo
+    /// invece di restare in "Detecting location…" all'infinito.
+    var isPermissionDenied: Bool {
+        authorizationStatus == .denied || authorizationStatus == .restricted
+    }
+
     override init() {
         super.init()
         manager.delegate = self
