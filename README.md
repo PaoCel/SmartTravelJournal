@@ -1,6 +1,5 @@
 # Smart Travel Journal
 
-Capstone project of the *Developing iOS Apps with Swift* specialization.
 A travel journal that keeps trips, journal entries with mood and photo, the place
 each entry was written, the weather at that place, a map of the whole trip,
 charts over time, and AI summaries and tags generated on device.
@@ -52,3 +51,20 @@ hold the `ModelContext`: they receive it from the view when they need to write.
 - **Entry editor** — text, date, GPS coordinates, live weather, mood, photo
 - **Map** — one annotation per entry, mood colours, style picker, user location
 - **Charts** — entries over time, mood trend, totals
+
+## Notes on the implementation
+
+- Networking lives in `Services/`, never in a view: the view model calls the
+  service, the service builds URLs with `URLComponents` and checks
+  `HTTPURLResponse.statusCode` before decoding.
+- Errors are `LocalizedError` enums, so the UI shows a written message and a
+  Retry button instead of a system string.
+- Every Foundation Models call is guarded by `isAvailable` and wrapped in a
+  timeout, with a static fallback: the AI card never hangs and is never empty.
+- The API key is read from the generated Info.plist, never committed.
+- Swift 6 language mode, strict concurrency, no deprecated APIs.
+
+## Context
+
+Built while following IBM's *Developing iOS Apps with Swift* specialization on
+Coursera.

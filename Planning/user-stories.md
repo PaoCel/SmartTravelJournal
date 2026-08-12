@@ -1,6 +1,6 @@
 # Smart Travel Journal — User Stories
 
-Lab 1, Step 1. Formato: *As a [type of user], I want [goal] so that [reason].*
+Formato: *As a [type of user], I want [goal] so that [reason].*
 
 1. **As a traveler**, I want to create trips with a title and a date range **so that**
    I can organize my memories by destination.
@@ -27,18 +27,18 @@ Lab 1, Step 1. Formato: *As a [type of user], I want [goal] so that [reason].*
 
 ## Copertura
 
-Ogni story mappa su una feature dichiarata nel project walkthrough:
+Ogni story mappa su una feature e sui framework che la realizzano:
 
-| # | Feature | Dove viene costruita |
+| # | Feature | Framework |
 |---|---|---|
-| 1 | Trip (modello + Trip List) | Lab 2, Lab 4 |
-| 2 | JournalEntry con foto, mood, GPS | Lab 2, Lab 4 |
-| 3 | Map View con pin | Lab 5 |
-| 4 | Ricerca per titolo (`.searchable`) | Lab 4 |
-| 5 | Charts tab (Swift Charts) | Lab 6 |
-| 6 | Riassunto AI (Foundation Models) | Lab 7 |
-| 7 | Fallback quando l'AI non è disponibile | Lab 7 |
+| 1 | Trip (modello + Trip List) | SwiftData, SwiftUI |
+| 2 | JournalEntry con foto, mood, GPS | SwiftData, CoreLocation |
+| 3 | Map View con pin | MapKit |
+| 4 | Ricerca per titolo (`.searchable`) | SwiftUI |
+| 5 | Charts tab | Swift Charts |
+| 6 | Riassunto AI | Foundation Models |
+| 7 | Fallback quando l'AI non è disponibile | — |
 
-La 7 non è una feature ma un requisito di robustezza: il corso insiste che l'AI sia
-*progressive enhancement*, con `isAvailable` e contenuto statico di riserva.
+La 7 non è una feature ma un requisito di robustezza: l'AI è *progressive
+enhancement*, con `isAvailable` e contenuto statico di riserva.
 Sul simulatore il fallback è il comportamento atteso, non un bug.
