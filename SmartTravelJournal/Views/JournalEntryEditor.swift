@@ -67,6 +67,7 @@ struct JournalEntryEditor: View {
                             Text("Fetching weather…")
                                 .foregroundStyle(.secondary)
                         }
+                        .transition(.move(edge: .top).combined(with: .opacity))
                     } else if let weatherError {
                         VStack(alignment: .leading, spacing: 8) {
                             Text(weatherError)
@@ -77,15 +78,19 @@ struct JournalEntryEditor: View {
                                 Task { await fetchWeather() }
                             }
                         }
+                        .transition(.move(edge: .top).combined(with: .opacity))
                     } else if !weatherText.isEmpty {
                         Text(weatherText)
                             .font(.subheadline)
+                            .transition(.move(edge: .top).combined(with: .opacity))
                     } else {
                         Text("Weather will load once your location is available.")
                             .foregroundStyle(.secondary)
                             .font(.caption)
+                            .transition(.move(edge: .top).combined(with: .opacity))
                     }
                 }
+                .animation(.easeInOut(duration: 0.3), value: isLoadingWeather)
 
                 Section("Mood") {
                     HStack {

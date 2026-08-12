@@ -13,7 +13,7 @@ struct ContentView: View {
                     Label("Map", systemImage: "map.fill")
                 }
 
-            ChartsPlaceholderView()
+            ChartsTabView()
                 .tabItem {
                     Label("Charts", systemImage: "chart.bar.fill")
                 }

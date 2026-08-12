@@ -3,12 +3,14 @@ import SwiftUI
 struct EntryRowView: View {
     let entry: JournalEntry
 
+    @ScaledMetric private var circleSize: CGFloat = 40
+
     var body: some View {
         HStack(spacing: 12) {
             ZStack {
                 Circle()
                     .fill(Color.accentColor.opacity(0.15))
-                    .frame(width: 40, height: 40)
+                    .frame(width: circleSize, height: circleSize)
 
                 Text(entry.mood.emoji)
                     .font(.title3)

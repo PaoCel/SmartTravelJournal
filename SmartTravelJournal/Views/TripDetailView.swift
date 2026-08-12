@@ -6,18 +6,31 @@ struct TripDetailView: View {
     @Environment(\.modelContext) private var modelContext
 
     let trip: Trip
+    let namespace: Namespace.ID
 
     @State private var showAddEntry = false
+    @State private var appeared = false
 
     private var sortedEntries: [JournalEntry] {
         trip.entries.sorted { $0.timestamp < $1.timestamp }
     }
 
     var body: some View {
-        Form {
+        List {
+            Section {
+                Image(trip.coverImageName)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 140)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .matchedGeometryEffect(id: trip.id, in: namespace)
+                    .listRowInsets(EdgeInsets())
+            }
+
             Section("Trip Info") {
                 LabeledContent("Dates", value: dateRange)
                 LabeledContent("Entries", value: "\(trip.entries.count)")
+                    .contentTransition(.numericText())
             }
 
             Section {
@@ -32,8 +45,15 @@ struct TripDetailView: View {
                         .foregroundStyle(.secondary)
                         .font(.caption)
                 } else {
-                    ForEach(sortedEntries) { entry in
+                    ForEach(Array(sortedEntries.enumerated()), id: \.element.id) { index, entry in
                         EntryRowView(entry: entry)
+                            .opacity(appeared ? 1 : 0)
+                            .offset(y: appeared ? 0 : 20)
+                            .animation(
+                                .spring(duration: 1.2, bounce: 0.25)
+                                    .delay(Double(index) * 0.18),
+                                value: appeared
+                            )
                     }
                     .onDelete { offsets in
                         for index in offsets {
@@ -48,7 +68,9 @@ struct TripDetailView: View {
 
             Section {
                 Button {
-                    showAddEntry = true
+                    withAnimation(.spring(duration: 0.4, bounce: 0.2)) {
+                        showAddEntry = true
+                    }
                 } label: {
                     Text("+ Add Entry")
                         .frame(maxWidth: .infinity)
@@ -59,6 +81,15 @@ struct TripDetailView: View {
         }
         .navigationTitle(trip.title)
         .navigationSubtitle("\(dateRange) · \(entriesLabel)")
+        .onAppear {
+            appeared = false
+            Task {
+                try? await Task.sleep(for: .milliseconds(100))
+                withAnimation {
+                    appeared = true
+                }
+            }
+        }
         .sheet(isPresented: $showAddEntry) {
             JournalEntryEditor(trip: trip)
         }

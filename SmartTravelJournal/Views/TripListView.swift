@@ -9,6 +9,7 @@ struct TripListView: View {
     private var trips: [Trip]
 
     @State private var showAddTrip = false
+    @Namespace private var tripNamespace
 
     var body: some View {
         @Bindable var vm = tripsViewModel
@@ -17,9 +18,9 @@ struct TripListView: View {
             List {
                 ForEach(vm.filteredTrips(trips)) { trip in
                     NavigationLink {
-                        TripDetailView(trip: trip)
+                        TripDetailView(trip: trip, namespace: tripNamespace)
                     } label: {
-                        TripRowView(trip: trip)
+                        TripRowView(trip: trip, namespace: tripNamespace)
                     }
                 }
                 .onDelete { offsets in
@@ -31,7 +32,9 @@ struct TripListView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("+ Trip") {
-                        showAddTrip = true
+                        withAnimation(.spring(duration: 0.4, bounce: 0.2)) {
+                            showAddTrip = true
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                     .buttonBorderShape(.capsule)

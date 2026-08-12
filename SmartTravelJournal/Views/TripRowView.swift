@@ -2,14 +2,18 @@ import SwiftUI
 
 struct TripRowView: View {
     let trip: Trip
+    let namespace: Namespace.ID
+
+    @ScaledMetric private var imageSize: CGFloat = 60
 
     var body: some View {
         HStack(spacing: 12) {
             Image(trip.coverImageName)
                 .resizable()
                 .scaledToFill()
-                .frame(width: 60, height: 60)
+                .frame(width: imageSize, height: imageSize)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
+                .matchedGeometryEffect(id: trip.id, in: namespace)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(trip.title)
@@ -21,7 +25,8 @@ struct TripRowView: View {
 
                 Text("\(trip.entries.count) entries")
                     .font(.caption2)
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(.tint)
+                    .contentTransition(.numericText())
             }
         }
     }
